@@ -1,22 +1,26 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.4
 
 import PackageDescription
 
 let package = Package(
     name: "qr",
     platforms: [
-        .macOS(.v10_13),
+        .macOS(.v11),
     ],
     products: [
         .executable(name: "qr", targets: ["qr"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.5.0")
+        .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.7")),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", .branch("release/1.0.3"))
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "qr",
-            dependencies: ["SPMUtility"]),
+            dependencies: [
+                "SwiftPM",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]),
         .testTarget(
             name: "qrTests",
             dependencies: ["qr"]),

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Basic
+import TSCBasic
 import CoreImage
 
 enum QRCodeEncoderError: LocalizedError {
@@ -32,16 +32,18 @@ class QRCodeEncoder {
                 throw QRCodeEncoderError.encodeFailed(string)
             }
 
+            var filePath = ""
             // Save QRcode image
-            let file = try TemporaryFile(suffix: ".png", deleteOnClose: false)
-            let context = CIContext()
-            try context.writePNGRepresentation(of: ciImage,
-                                               to: file.path.asURL,
-                                               format: .RGBA8,
-                                               colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+            try withTemporaryFile(suffix: ".png") { tempFile, cleanup in
+                let context = CIContext()
+                try context.writePNGRepresentation(of: ciImage,
+                                                   to: tempFile.path.asURL,
+                                                   format: .RGBA8,
+                                                   colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
 
-            return file.path.asURL.absoluteString
-
+                filePath = tempFile.path.asURL.absoluteString
+            }
+            return filePath
         } catch {
             throw QRCodeEncoderError.encodeFailed(string)
         }
